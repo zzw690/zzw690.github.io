@@ -1,0 +1,396 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>信易修 · 企业信用体检与修复路径智能分流系统 | 上海玺浩律师事务所</title>
+<link rel="stylesheet" href="style.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<script src="assets-data.js"></script>
+</head>
+<body>
+<div class="bg"><img data-skyline src="" alt=""></div>
+
+<div class="app">
+  <!-- ============ 侧边栏 ============ -->
+  <aside class="sidebar no-print">
+    <div class="brand">
+      <img data-shield src="" alt="玺浩">
+      <div>
+        <strong>信易修</strong>
+        <small>上海玺浩律师事务所</small>
+      </div>
+    </div>
+    <nav class="nav">
+      <button data-screen="check" class="is-active">
+        <svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+        信用体检
+      </button>
+      <button data-screen="triage">
+        <svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 6h16M4 12h10M4 18h6"/><circle cx="19" cy="16" r="3"/></svg>
+        智能分诊
+      </button>
+      <button data-screen="report">
+        <svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M6 2h9l4 4v16H6z"/><path d="M9 12h8M9 16h8M9 8h4"/></svg>
+        体检报告
+      </button>
+      <button data-screen="progress">
+        <svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 3"/></svg>
+        案件进度
+      </button>
+      <button data-screen="history">
+        <svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 12a9 9 0 1 0 3-6.7L3 8"/><path d="M3 3v5h5"/><path d="M12 7v5l3 3"/></svg>
+        历史记录
+      </button>
+      <button data-screen="promise">
+        <svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 2 4 5v6c0 5 3.4 9.4 8 11 4.6-1.6 8-6 8-11V5z"/><path d="m9 12 2 2 4-4"/></svg>
+        合规承诺
+      </button>
+    </nav>
+    <div style="padding:6px 8px 2px">
+      <button class="btn btn-sm" style="width:100%" onclick="enterEnt()">📱 切换到企业端（扫码企业视角）</button>
+    </div>
+    <div class="side-note">
+      本系统为<b>演示原型</b>，数据为脱敏示例。真实场景中，信用信息以信用中国、国家企业信用信息公示系统等官方平台核验为准。
+    </div>
+  </aside>
+
+  <!-- ============ 主区域 ============ -->
+  <main class="main">
+
+    <!-- ======== 屏 1：信用体检 ======== -->
+    <section class="screen is-on" id="screen-check">
+      <div class="topbar">
+        <div>
+          <h1>企业信用体检</h1>
+          <p>汇聚四大权威平台涉企信用信息，一屏看清信用底数</p>
+        </div>
+        <div class="slogan">信用修复，先分诊，再治疗</div>
+      </div>
+
+      <div class="panel">
+        <div class="panel-h">
+          <div>
+            <h3>选择体检对象</h3>
+            <p>演示版预置三家脱敏示例企业；正式版支持输入企业名称或统一社会信用代码实时核验</p>
+          </div>
+        </div>
+        <div class="search-row">
+          <input class="search-input" id="searchInput" placeholder="输入企业名称 / 统一社会信用代码（演示版请点下方示例）">
+          <button class="btn btn-primary" onclick="startCheck()">开始体检</button>
+        </div>
+        <div class="demo-tags" id="demoTags"></div>
+        <div style="margin-top:12px">
+          <button class="btn btn-sm" id="manualToggle" onclick="toggleManual()">＋ 手动录入企业（真实业务入口）</button>
+        </div>
+        <div class="manual-form" id="manualForm">
+          <div class="f-row">
+            <span class="f-label">企业名称</span>
+            <input class="f-input" id="mName" placeholder="例：某某贸易（上海）有限公司">
+            <span class="f-label">行业/规模</span>
+            <input class="f-input" id="mIndustry" placeholder="例：批发零售业 · 小微企业" style="max-width:240px">
+          </div>
+          <div class="f-row">
+            <span class="f-label">不良记录</span>
+            <select class="f-select" id="mRecType">
+              <option>行政处罚</option>
+              <option>经营异常</option>
+              <option>司法失信</option>
+            </select>
+            <input class="f-input" id="mRecTitle" placeholder="记录内容，例：市场监管部门罚款 1 万元">
+            <button class="btn btn-sm" onclick="addManualRec()">＋ 添加记录</button>
+          </div>
+          <div class="manual-recs" id="manualRecs"></div>
+          <div class="f-row" style="margin-bottom:0">
+            <button class="btn btn-primary btn-sm" onclick="createManual()">创建体检对象并进入体检</button>
+            <span style="font-size:11px;opacity:.6">录入后流程与示例企业完全一致：分诊 → 报告 → 进度跟踪</span>
+          </div>
+        </div>
+      </div>
+
+      <div id="checkResult" style="display:none">
+        <div class="panel">
+          <div class="panel-h">
+            <div>
+              <h3 id="checkCompanyName">—</h3>
+              <p id="checkCompanyMeta">—</p>
+            </div>
+            <button class="btn btn-seal" onclick="gotoScreen('triage')">进入智能分诊 →</button>
+          </div>
+          <div class="stat-grid" id="statGrid"></div>
+        </div>
+
+        <div class="panel">
+          <div class="panel-h">
+            <div>
+              <h3>涉企不良信用记录明细</h3>
+              <p>共 <b id="recCount">0</b> 条记录 · 逐条进入分诊，区分「可修复 / 异议更正 / 不可修复」三条法律路径</p>
+            </div>
+          </div>
+          <table class="rec-table">
+            <thead>
+              <tr><th style="width:36px">#</th><th>记录内容</th><th style="width:110px">类型</th><th style="width:130px">信息来源平台</th><th style="width:120px">当前状态</th></tr>
+            </thead>
+            <tbody id="recTableBody"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="panel empty" id="checkEmpty">
+        <img data-shield src="" alt="">
+        <p>选择上方示例企业，或输入企业名称<br>系统将生成该企业跨平台信用记录全景</p>
+      </div>
+      <div class="panel no-print">
+        <div class="panel-h">
+          <div>
+            <h3>📣 渠道推广</h3>
+            <p>正式部署后生成体检入口二维码，印在商会 / 园区 / 协会宣传物料上，企业扫码直达、无需安装</p>
+          </div>
+        </div>
+        <div class="f-row">
+          <span class="f-label">部署网址</span>
+          <input class="f-input" id="promoUrl" value="https://tijian.xihaolaw.cn/?from=shanghui">
+          <button class="btn btn-primary btn-sm" onclick="makeQr()">生成二维码</button>
+          <button class="btn btn-sm" onclick="copyPromoUrl()">复制链接</button>
+        </div>
+        <div class="qr-wrap">
+          <div id="qrBox"><span style="font-size:11px;color:#a8a29e">点击「生成二维码」</span></div>
+          <div class="qr-note">① 商会版、园区版各自生成专属二维码，按 from 参数统计各渠道线索量<br>② 企业扫码 → 30 秒完成体检 → 生成报告 → 律师回访转化<br>③ 网页形态免安装、免注册，微信内直接打开，推广门槛最低</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ======== 屏 2：智能分诊 ======== -->
+    <section class="screen" id="screen-triage">
+      <div class="topbar">
+        <div>
+          <h1>智能分诊 · 三路径分流</h1>
+          <p>逐条回答即可自动匹配法律路径。看不懂？点每题后面的 <b>?</b> 有白话解释；拿不准就选「不确定」，交给律师免费初判</p>
+        </div>
+        <div class="slogan" id="triageFor">请先完成信用体检</div>
+      </div>
+
+      <div id="triageList"></div>
+
+      <div class="panel empty" id="triageEmpty">
+        <img data-shield src="" alt="">
+        <p>尚未选择体检企业<br><button class="btn btn-primary" style="margin-top:10px" onclick="gotoScreen('check')">← 返回信用体检</button></p>
+      </div>
+
+      <div class="panel no-print" id="triageActions" style="display:none">
+        <div class="panel-h" style="margin-bottom:0">
+          <div>
+            <h3>分诊完成？</h3>
+            <p>全部记录完成分流后，生成正式《企业信用风险体检报告》</p>
+          </div>
+          <div style="display:flex;gap:10px">
+            <button class="btn" onclick="autoFill()">⚡ 一键智能预填（演示）</button>
+            <button class="btn btn-seal" onclick="buildReport()">生成体检报告 →</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ======== 屏 3：体检报告 ======== -->
+    <section class="screen" id="screen-report">
+      <div class="topbar no-print">
+        <div>
+          <h1>信用风险体检报告</h1>
+          <p>自动汇总体检与分诊结果，可打印交付或保存为文件存档</p>
+        </div>
+        <div id="reportBtns" style="display:none;gap:10px;flex:none">
+          <button class="btn" onclick="window.print()">🖨 打印</button>
+          <button class="btn btn-primary" onclick="savePdf()">📄 保存 PDF</button>
+        </div>
+      </div>
+      <div id="reportHost">
+        <div class="panel empty">
+          <img data-shield src="" alt="">
+          <p>尚未生成报告<br>请先完成「信用体检」与「智能分诊」</p>
+        </div>
+      </div>
+      <div class="cta no-print" id="ctaRow" style="display:none">
+        <div class="cta-card">
+          <h4>🩺 公益信用体检</h4>
+          <div class="price">0 元<small> / 次</small></div>
+          <p>依托商会、园区、行业协会渠道免费发放，本报告即为引流入口，建立专业信任。</p>
+        </div>
+        <div class="cta-card hot">
+          <h4>⚖️ 专项法律代理 <span class="badge badge-red">转化层</span></h4>
+          <div class="price">1,800 元<small> / 件起</small></div>
+          <p>按路径分档计价：异常移出 1,800 元、异议更正 3,000 元起、处罚修复 6,000 元起、司法失信 8,000 元起。</p>
+        </div>
+        <div class="cta-card">
+          <h4>🛡 年度信用合规顾问</h4>
+          <div class="price">9,800 元<small> / 年起</small></div>
+          <p>定期体检、风险预警、交易对手资信审查，防止「修复—失信—再修复」循环。</p>
+        </div>
+      </div>
+      <div class="panel no-print" id="feePanel" style="display:none;max-width:860px;margin:0 auto">
+        <div class="panel-h">
+          <div>
+            <h3>费用方案 · 透明计价，按阶段收费</h3>
+            <p>不承诺结果、不收取「删记录」费用；每一阶段明码标价，企业按进度付费</p>
+          </div>
+        </div>
+        <table class="fee-table">
+          <thead><tr><th>服务层级</th><th>服务内容</th><th style="width:150px">参考价格</th></tr></thead>
+          <tbody>
+            <tr><td rowspan="2"><b>引流层</b></td><td>线上公益信用体检 + 简版报告（本系统）</td><td class="fee-price">0 元</td></tr>
+            <tr><td>律师人工免费初判（15 分钟 + 书面分诊意见，首次）</td><td class="fee-price">0 元</td></tr>
+            <tr><td rowspan="5"><b>专项代理</b><br><span style="font-size:11px;opacity:.6">按件收费</span></td><td>经营异常名录移出</td><td class="fee-price">1,800 元 / 件</td></tr>
+            <tr><td>信用信息异议更正（信息错误纠错）</td><td class="fee-price">3,000 元 / 件起</td></tr>
+            <tr><td>行政处罚信用修复（材料组卷 + 提交 + 全程跟进）</td><td class="fee-price">6,000 元 / 件起</td></tr>
+            <tr><td>司法失信删除（含商事调解对接；调解不成转诉讼另计）</td><td class="fee-price">8,000 元 / 件起</td></tr>
+            <tr><td>行政复议 / 行政诉讼（修复被驳回后的救济）</td><td class="fee-price">12,000 元 / 件起</td></tr>
+            <tr><td rowspan="2"><b>留存层</b><br><span style="font-size:11px;opacity:.6">年度订阅</span></td><td>小微企业版：每季度信用体检 + 失信预警提醒 + 2 次交易对手资信审查</td><td class="fee-price">9,800 元 / 年</td></tr>
+            <tr><td>成长企业版：每月体检 + 预警 + 10 次资信审查 + 合同信用条款审查</td><td class="fee-price">29,800 元 / 年</td></tr>
+          </tbody>
+        </table>
+        <p class="fee-note">定价逻辑：显著低于非法中介动辄数万元的「包修复」报价，且不捆绑、不预付全款——体检免费建立信任，按实际路径报价，办到哪一步收哪一步的钱。具体报价以委托合同约定为准。</p>
+      </div>
+    </section>
+
+    <!-- ======== 屏 4：案件进度 ======== -->
+    <section class="screen" id="screen-progress">
+      <div class="topbar">
+        <div>
+          <h1>案件进度跟踪</h1>
+          <p>每条记录一条分路径法律工作流管道：进度可视化、法定时限自动提醒</p>
+        </div>
+        <div class="slogan">办到哪一步，一目了然</div>
+      </div>
+      <div id="progressHost"></div>
+      <div class="panel empty" id="progressEmpty">
+        <img data-shield src="" alt="">
+        <p>尚未选择体检企业<br><button class="btn btn-primary" style="margin-top:10px" onclick="gotoScreen('check')">← 返回信用体检</button></p>
+      </div>
+      <div class="panel" id="deadlinePanel" style="display:none">
+        <div class="panel-h">
+          <div>
+            <h3>⏰ 法定时限提醒</h3>
+            <p>系统按分诊结论自动生成时限日历，到期前推送提醒（演示数据以今天为基准计算）</p>
+          </div>
+        </div>
+        <div class="deadline-list" id="deadlineList"></div>
+      </div>
+    </section>
+
+    <!-- ======== 屏 5：历史记录 ======== -->
+    <section class="screen" id="screen-history">
+      <div class="topbar">
+        <div>
+          <h1>历史记录</h1>
+          <p>每一次体检报告自动存档在本机，可随时调阅、继续办理或删除</p>
+        </div>
+        <button class="btn btn-sm" id="clearHistBtn" onclick="clearHistory()" style="display:none">清空全部</button>
+      </div>
+      <div id="histList"></div>
+      <div class="panel empty" id="histEmpty">
+        <img data-shield src="" alt="">
+        <p>暂无历史记录<br>生成第一份体检报告后将自动存档</p>
+      </div>
+      <div class="side-note" style="margin-top:4px">🔒 数据仅保存在本机浏览器（localStorage），不上传任何服务器，符合数据合规要求。</div>
+
+      <div class="panel" style="margin-top:16px">
+        <div class="panel-h" style="margin-bottom:10px">
+          <div>
+            <h3>📥 客户线索池（企业端自助体检提交）</h3>
+            <p>企业端用户完成自助体检并留下联系方式后，线索实时进入本池，供律师回访转化</p>
+          </div>
+        </div>
+        <div id="leadList"></div>
+      </div>
+    </section>
+
+    <!-- ======== 屏 6：合规承诺 ======== -->
+    <section class="screen" id="screen-promise">
+      <div class="topbar">
+        <div>
+          <h1>合规承诺 · 我们与「征信修复」黑产的区别</h1>
+          <p>依法修复 ≠ 花钱删记录。本所严守执业底线，接受社会监督</p>
+        </div>
+      </div>
+      <div class="vs">
+        <div class="vs-col vs-bad">
+          <h4>✕ 非法「征信修复」中介</h4>
+          <ul>
+            <li>虚假承诺「一键删除」「包修复成功」「100% 下记录」</li>
+            <li>收取高额费用后无法兑现，甚至失联跑路</li>
+            <li>诱导企业伪造材料、篡改信息，涉嫌诈骗与伪造证据</li>
+            <li>企业敏感信息泄露，二次伤害</li>
+          </ul>
+        </div>
+        <div class="vs-col vs-good">
+          <h4>✓ 玺浩 · 依法信用修复法律服务</h4>
+          <ul>
+            <li>不承诺修复结果，委托合同载明服务边界与风险告知</li>
+            <li>法定不可修复的严重失信案件，坚决拒接并如实告知</li>
+            <li>全程依法：材料法律审核、行政沟通、复议诉讼兜底</li>
+            <li>遵守数据合规与个人信息保护最小必要原则</li>
+            <li>配套商事调解，从源头化解债务类失信事由</li>
+          </ul>
+        </div>
+      </div>
+      <div class="panel" style="margin-top:16px">
+        <div class="panel-h" style="margin-bottom:6px">
+          <div>
+            <h3>制度依据</h3>
+            <p>《信用修复管理办法》（2026 年 4 月 1 日施行）·《征信业管理条例》·《行政处罚法》·《行政复议法》· 失信惩戒相关司法解释</p>
+          </div>
+          <img data-shield src="" style="width:40px" alt="">
+        </div>
+      </div>
+    </section>
+
+  </main>
+</div>
+
+<!-- ============ 端口选择门禁：企业端 / 律师端分离 ============ -->
+<div class="gate" id="roleGate">
+  <div class="gate-inner">
+    <div class="gate-brand">
+      <img data-shield src="" alt="玺浩">
+      <h1>信易修</h1>
+      <p>中小微企业信用修复与异议更正一体化法律服务 ｜ 上海玺浩律师事务所</p>
+    </div>
+    <div class="gate-cards">
+      <div class="gate-card" onclick="pickRole('ent')">
+        <div class="g-ico">🏢</div>
+        <h3>我是企业主</h3>
+        <p>3 分钟免费信用自检<br>不需要任何专业知识，跟着指引一步步作答<br>自动生成体检报告与办理路径</p>
+        <span class="g-tag">免费 · 无需注册 · 数据不出本机</span>
+      </div>
+      <div class="gate-card lawyer" onclick="pickRole('lawyer')">
+        <div class="g-ico">⚖️</div>
+        <h3>律师工作台</h3>
+        <p>案件分诊管理、报告出具、进度跟踪、<br>客户线索池与合规承诺展示<br>（本所工作人员入口）</p>
+        <span class="g-tag" style="color:var(--seal);background:rgba(200,22,35,.06);border-color:rgba(200,22,35,.2)">内部管理端 · 演示</span>
+      </div>
+    </div>
+    <div class="gate-foot">演示原型 · 数据均为脱敏示例 ｜ 信用修复，先分诊，再治疗</div>
+  </div>
+</div>
+
+<!-- ============ 企业端 · 自助信用体检向导 ============ -->
+<div class="ent-app" id="entApp">
+  <div class="ent-shell">
+    <div class="ent-head no-print">
+      <img data-shield src="" alt="玺浩">
+      <div>
+        <strong>信易修 · 企业自助信用体检</strong>
+        <small>上海玺浩律师事务所 · 公益法律服务</small>
+      </div>
+      <button class="btn btn-sm ent-exit" onclick="exitEnt()">律师工作台 ↗</button>
+    </div>
+    <div class="ent-steps no-print" id="entSteps"></div>
+    <div id="entBody"></div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+<script src="app.js"></script>
+</body>
+</html>
